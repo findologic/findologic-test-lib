@@ -1,6 +1,6 @@
 <?php
 
-namespace Findologic\Base;
+namespace Soprex\Findologic\Modules\Tests\Base;
 
 abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 {

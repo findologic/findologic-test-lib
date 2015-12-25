@@ -1,5 +1,6 @@
 {
-    "name": "findologic/module-test-lib",
+    "name": "soprex/findologic-test-lib",
+    "description": "Base library for unit testing FINDOLOGIC shop modules.",
     "require": {
         "php": ">=5.3.3",
         "phpunit/phpunit": "4.8.*"
@@ -9,13 +10,13 @@
     },
     "authors": [
         {
-            "name": "soprex",
+            "name": "Soprex",
             "email": "support@soprex.com"
         }
     ],
     "autoload": {
         "psr-4": {
-            "Findologic\\" : "src/"
+            "Soprex\\Findologic\\Modules\\Tests\\" : "src/"
         }
     },
     "minimum-stability": "alpha"
