@@ -1,0 +1,22 @@
+{
+    "name": "findologic/module-test-lib",
+    "require": {
+        "php": ">=5.3.3",
+        "phpunit/phpunit": "4.8.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.8.*"
+    },
+    "authors": [
+        {
+            "name": "soprex",
+            "email": "support@soprex.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Findologic\\" : "src/"
+        }
+    },
+    "minimum-stability": "alpha"
+}
