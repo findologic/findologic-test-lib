@@ -1,6 +1,12 @@
 {
     "name": "soprex/findologic-test-lib",
     "description": "Base library for unit testing FINDOLOGIC shop modules.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "soprex-findologic",
+        "findologic-test"
+    ],
     "require": {
         "php": ">=5.3.3",
         "phpunit/phpunit": "4.8.*"

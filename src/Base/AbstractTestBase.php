@@ -16,12 +16,13 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedCount, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
 
-        $this->changeItemActiveStatus($products['items']['item'][0]['@attributes']['id'], 0);
+        $productId = $products['items']['item']['@attributes']['id'];
+        $this->changeItemActiveStatus($productId, 0);
         $products = $this->executeApiExport(array('count' => 1, 'start' => 0));
         $actualCount = (int) $products['items']['@attributes']['total'];
+        $this->changeItemActiveStatus($productId, 1);
 
         $this->assertEquals($expectedCount - 1, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
-        $this->changeItemActiveStatus($products['items']['item'][0]['@attributes']['id'], 1);
     }
 
     /**
@@ -32,15 +33,16 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
         $expectedCount = $this->getProductCount();
         $products = $this->executeApiExport(array('count' => 1, 'start' => 0));
         $actualCount = (int) $products['items']['@attributes']['total'];
+        $productId = $products['items']['item']['@attributes']['id'];
 
         $this->assertEquals($expectedCount, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
 
-        $this->changeItemStockStatus($products['items']['item'][0]['@attributes']['id'], 0);
+        $this->changeItemStockStatus($productId, 0);
         $products = $this->executeApiExport(array('count' => 1, 'start' => 0));
         $actualCount = (int) $products['items']['@attributes']['total'];
+        $this->changeItemStockStatus($productId, 1);
 
         $this->assertEquals($expectedCount - 1, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
-        $this->changeItemStockStatus($products['items']['item'][0]['@attributes']['id'], 1);
     }
 
     /**
