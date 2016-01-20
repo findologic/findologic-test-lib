@@ -42,7 +42,8 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
         $actualCount = (int) $products['items']['@attributes']['total'];
         $this->changeItemStockStatus($productId, 1);
 
-        $this->assertEquals($expectedCount - 1, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
+        $oneLess = $expectedCount - 1;
+        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
     }
 
     /**
