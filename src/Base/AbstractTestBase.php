@@ -46,6 +46,11 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
     }
 
+    public function testTest()
+    {
+        $this->assertTrue(true, 'asdf');
+    }
+
     /**
      * Returns test shop url with api endpoint
      * e.g. 'http://magento.dev.soprex.com/findologic/export'
