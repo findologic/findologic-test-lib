@@ -144,7 +144,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     /**
      * Tests if correct product price is exported
      */
-    public function testProductsWithoutPriceAreNotExported()
+    public function testProductPriceExport()
     {
         $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
         $productId = $products['items']['item']['@attributes']['id'];
@@ -152,7 +152,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         $productDescription = $this->getProductPrice($productId);
 
-        $this->assertEquals($productDescription, $products['items']['item']['descriptions']['description'], $message);
+        $this->assertEquals($productDescription, $products['items']['item']['prices']['price'], $message);
     }
 
     /**
