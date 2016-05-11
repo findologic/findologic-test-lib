@@ -31,7 +31,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         $this->changeItemActiveStatus($productId, 0);
         $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $newExport['@attributes']['total'];
+        $actualCount = (int) $newExport['items']['@attributes']['total'];
         $this->changeItemActiveStatus($productId, 1);
 
         $this->assertEquals($expectedCount - 1, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
@@ -50,7 +50,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         $this->changeItemStockStatus($productId, 0);
         $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $products['@attributes']['total'];
+        $actualCount = (int) $products['items']['@attributes']['total'];
         $this->changeItemStockStatus($productId, 1);
 
         $oneLess = $expectedCount - 1;
