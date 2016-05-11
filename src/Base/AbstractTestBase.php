@@ -122,7 +122,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
         $productId = $products['items']['item']['@attributes']['id'];
         $message = 'Product summaries do not match!';
 
-        $productTitle = $this->getProductTitle($productId);
+        $productTitle = $this->getProductSummary($productId);
 
         $this->assertEquals($productTitle, $products['items']['item']['summaries']['summary'], $message);
     }
