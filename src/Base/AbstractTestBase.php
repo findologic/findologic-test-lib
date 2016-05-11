@@ -94,7 +94,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $productOrderNumber,
-            $products['item']['items']['allOrdernumbers']['ordernumbers']['ordernumber'],
+            $products['items']['item']['allOrdernumbers']['ordernumbers']['ordernumber'],
             $message
         );
     }
