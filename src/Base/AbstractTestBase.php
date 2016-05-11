@@ -82,123 +82,77 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if export contains only those items that have order number
-     *
-     * @depends testNumberOfExportedProducts
-     * @param array $products
+     * Tests if correct product number is exported
      */
-    public function testProductsWithoutOrderNumberAreNotExported(array $products)
+    public function testProductOrderNumberExport()
     {
-        $expectedCount = $this->getProductCount();
+        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Product order numbers do not match!';
 
-        $productOrderNumber = $products['item']['allOrdernumbers']['ordernumbers']['ordernumber'];
-        $productId = $products['item']['@attributes']['id'];
+        $productOrderNumber = $this->getProductOrderNumber($productId);
 
-        $this->changeProductOrderNumber($productId, '');
-
-        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $newExport['items']['@attributes']['total'];
-
-        $this->changeProductOrderNumber($productId, $productOrderNumber);
-
-        $oneLess = $expectedCount - 1;
-        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
+        $this->assertEquals(
+            $productOrderNumber,
+            $products['item']['items']['allOrdernumbers']['ordernumbers']['ordernumber'],
+            $message
+        );
     }
 
     /**
-     * Tests if export contains only those items that have title
-     *
-     * @depends testNumberOfExportedProducts
-     * @param array $products
+     * Tests if correct product title is exported
      */
-    public function testProductsWithoutTitleAreNotExported(array $products)
+    public function testProductTitleExport()
     {
-        $expectedCount = $this->getProductCount();
+        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Product titles do not match!';
 
-        $productTitle = $products['item']['names']['name'];
-        $productId = $products['item']['@attributes']['id'];
+        $productTitle = $this->getProductTitle($productId);
 
-        $this->changeProductTitle($productId, '');
-
-        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $newExport['items']['@attributes']['total'];
-
-        $this->changeProductTitle($productId, $productTitle);
-
-        $oneLess = $expectedCount - 1;
-        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
+        $this->assertEquals($productTitle, $products['items']['item']['names']['name'], $message);
     }
 
     /**
-     * Tests if export contains only those items that have summary
-     *
-     * @depends testNumberOfExportedProducts
-     * @param array $products
+     * Tests if correct product summary is exported
      */
-    public function testProductsWithoutSummaryAreNotExported(array $products)
+    public function testProductSummaryExport()
     {
-        $expectedCount = $this->getProductCount();
+        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Product summaries do not match!';
 
-        $productSummary = $products['item']['summaries']['summary'];
-        $productId = $products['item']['@attributes']['id'];
+        $productTitle = $this->getProductTitle($productId);
 
-        $this->changeProductSummary($productId, '');
-
-        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $newExport['items']['@attributes']['total'];
-
-        $this->changeProductSummary($productId, $productSummary);
-
-        $oneLess = $expectedCount - 1;
-        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
+        $this->assertEquals($productTitle, $products['items']['item']['summaries']['summary'], $message);
     }
 
     /**
-     * Tests if export contains only those items that have description
-     *
-     * @depends testNumberOfExportedProducts
-     * @param array $products
+     * Tests if correct product description is exported
      */
-    public function testProductsWithoutDescriptionAreNotExported(array $products)
+    public function testProductDescriptionExport()
     {
-        $expectedCount = $this->getProductCount();
+        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Product descriptions do not match!';
 
-        $productDescription = $products['item']['descriptions']['description'];
-        $productId = $products['item']['@attributes']['id'];
+        $productDescription = $this->getProductDescription($productId);
 
-        $this->changeProductDescription($productId, '');
-
-        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $newExport['items']['@attributes']['total'];
-
-        $this->changeProductDescription($productId, $productDescription);
-
-        $oneLess = $expectedCount - 1;
-        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
+        $this->assertEquals($productDescription, $products['items']['item']['descriptions']['description'], $message);
     }
 
     /**
-     * Tests if export contains only those items that have price
-     *
-     * @depends testNumberOfExportedProducts
-     * @param array $products
+     * Tests if correct product price is exported
      */
-    public function testProductsWithoutPriceAreNotExported(array $products)
+    public function testProductsWithoutPriceAreNotExported()
     {
-        $expectedCount = $this->getProductCount();
+        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Product prices do not match!';
 
-        $productPrice = $products['item']['prices']['price'];
-        $productId = $products['item']['@attributes']['id'];
+        $productDescription = $this->getProductPrice($productId);
 
-        $this->changeProductPrice($productId, '');
-
-        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $newExport['items']['@attributes']['total'];
-
-        $this->changeProductPrice($productId, $productPrice);
-
-        $oneLess = $expectedCount - 1;
-        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
+        $this->assertEquals($productDescription, $products['items']['item']['descriptions']['description'], $message);
     }
 
     /**
@@ -207,23 +161,23 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      * @depends testNumberOfExportedProducts
      * @param array $products
      */
-    public function testProductsWithoutUrlAreNotExported(array $products)
-    {
-        $expectedCount = $this->getProductCount();
-
-        $productUrl = $products['item']['urls']['url'];
-        $productId = $products['item']['@attributes']['id'];
-
-        $this->changeProductUrl($productId, '');
-
-        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $newExport['items']['@attributes']['total'];
-
-        $this->changeProductUrl($productId, $productUrl);
-
-        $oneLess = $expectedCount - 1;
-        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
-    }
+//    public function testProductsWithoutUrlAreNotExported(array $products)
+//    {
+//        $expectedCount = $this->getProductCount();
+//
+//        $productUrl = $products['item']['urls']['url'];
+//        $productId = $products['item']['@attributes']['id'];
+//
+//        $this->changeProductUrl($productId, '');
+//
+//        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
+//        $actualCount = (int) $newExport['items']['@attributes']['total'];
+//
+//        $this->changeProductUrl($productId, $productUrl);
+//
+//        $oneLess = $expectedCount - 1;
+//        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
+//    }
 
     /**
      * Tests if in exported images first image is thumbnail
@@ -245,58 +199,52 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 //    protected abstract function getProductImages($productId);
 
     /**
-     * Changes product url by product id
+     * Returns product url by product id
      *
      * @param $productId
-     * @param $productUrl
      * @return string
      */
-    protected abstract function changeProductUrl($productId, $productUrl);
+//    protected abstract function getProductUrl($productId);
 
     /**
-     * Changes product price by product id
+     * Returns product price by product id
      *
      * @param $productId
-     * @param $productPrice
      * @return string
      */
-    protected abstract function changeProductPrice($productId, $productPrice);
+    protected abstract function getProductPrice($productId);
 
     /**
-     * Changes product description by product id
+     * Returns product description by product id
      *
      * @param $productId
-     * @param $productDescription
      * @return string
      */
-    protected abstract function changeProductDescription($productId, $productDescription);
+    protected abstract function getProductDescription($productId);
 
     /**
-     * Changes product summary by product id
+     * Return product summary by product id
      *
      * @param $productId
-     * @param $productSummary
      * @return string
      */
-    protected abstract function changeProductSummary($productId, $productSummary);
+    protected abstract function getProductSummary($productId);
 
     /**
-     * Changes product title by product id
+     * Returns product title by product id
      *
      * @param $productId
-     * @param $productTitle
      * @return string
      */
-    protected abstract function changeProductTitle($productId, $productTitle);
+    protected abstract function getProductTitle($productId);
 
     /**
-     * Changes product order number by product id
+     * Returns product order number by product id
      *
      * @param $productId
-     * @param $orderNumber
      * @return string
      */
-    protected abstract function changeProductOrderNumber($productId, $orderNumber);
+    protected abstract function getProductOrderNumber($productId);
 
     /**
      * Returns short description of the product by product id in english and german language
