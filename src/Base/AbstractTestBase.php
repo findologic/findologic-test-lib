@@ -137,9 +137,9 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
         $message = 'Product descriptions do not match!';
 
         $productDescription = $this->getProductDescription($productId);
-        $exportDescription = str_replace(' ', '', $products['items']['item']['descriptions']['description']);
+        $exportDesc = trim(preg_replace('/\s\s+/', '', $products['items']['item']['descriptions']['description']));
 
-        $this->assertEquals($productDescription, $exportDescription, $message);
+        $this->assertEquals($productDescription, $exportDesc, $message);
     }
 
     /**
