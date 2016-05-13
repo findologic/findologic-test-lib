@@ -15,7 +15,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedCount, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
 
-        return $products['items'];
+        return $products;
     }
 
     /**
@@ -46,7 +46,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     public function testItemsWithoutStockAreNotExported(array $products)
     {
         $expectedCount = $this->getProductCount();
-        $productId = $products['item']['@attributes']['id'];
+        $productId = $products['items']['item']['@attributes']['id'];
 
         $this->changeItemStockStatus($productId, 0);
         $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
