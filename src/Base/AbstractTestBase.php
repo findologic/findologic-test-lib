@@ -27,7 +27,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     public function testInactiveItemsAreNotExported(array $products)
     {
         $expectedCount = $this->getProductCount();
-        $productId = $products['item']['@attributes']['id'];
+        $productId = $products['items']['item']['@attributes']['id'];
 
         $this->changeItemActiveStatus($productId, 0);
         $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
