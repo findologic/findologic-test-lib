@@ -83,10 +83,12 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
     /**
      * Tests if correct product number is exported
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
      */
-    public function testProductOrderNumberExport()
+    public function testProductOrderNumberExport(array $products)
     {
-        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
         $productId = $products['items']['item']['@attributes']['id'];
         $message = 'Product order numbers do not match!';
 
@@ -101,10 +103,12 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
     /**
      * Tests if correct product title is exported
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
      */
-    public function testProductTitleExport()
+    public function testProductTitleExport(array $products)
     {
-        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
         $productId = $products['items']['item']['@attributes']['id'];
         $message = 'Product titles do not match!';
 
@@ -115,10 +119,12 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
     /**
      * Tests if correct product summary is exported
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
      */
-    public function testProductSummaryExport()
+    public function testProductSummaryExport(array $products)
     {
-        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
         $productId = $products['items']['item']['@attributes']['id'];
         $message = 'Product summaries do not match!';
 
@@ -129,10 +135,12 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
     /**
      * Tests if correct product description is exported
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
      */
-    public function testProductDescriptionExport()
+    public function testProductDescriptionExport(array $products)
     {
-        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
         $productId = $products['items']['item']['@attributes']['id'];
         $message = 'Product descriptions do not match!';
 
@@ -148,10 +156,12 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
     /**
      * Tests if correct product price is exported
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
      */
-    public function testProductPriceExport()
+    public function testProductPriceExport(array $products)
     {
-        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
         $productId = $products['items']['item']['@attributes']['id'];
         $message = 'Product prices do not match!';
 
@@ -161,28 +171,20 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if export contains only those items that have url
+     * Tests if correct product url is exported
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
      */
-//    public function testProductsWithoutUrlAreNotExported(array $products)
-//    {
-//        $expectedCount = $this->getProductCount();
-//
-//        $productUrl = $products['item']['urls']['url'];
-//        $productId = $products['item']['@attributes']['id'];
-//
-//        $this->changeProductUrl($productId, '');
-//
-//        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-//        $actualCount = (int) $newExport['items']['@attributes']['total'];
-//
-//        $this->changeProductUrl($productId, $productUrl);
-//
-//        $oneLess = $expectedCount - 1;
-//        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
-//    }
+    public function testProductUrlExport(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Product urls do not match!';
+
+        $productUrl = $this->getProductUrl($productId);
+
+        $this->assertEquals($productUrl, $products['items']['item']['urls']['url'], $message);
+    }
 
     /**
      * Tests if in exported images first image is thumbnail
@@ -209,7 +211,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      * @param $productId
      * @return string
      */
-//    protected abstract function getProductUrl($productId);
+    protected abstract function getProductUrl($productId);
 
     /**
      * Returns product price by product id
