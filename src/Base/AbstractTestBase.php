@@ -138,7 +138,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         $productDescription = $this->getProductDescription($productId);
         $exportDesc = str_replace(
-            [' ', "\n"],
+            [' ', "\n", "\r"],
             '',
             html_entity_decode($products['items']['item']['descriptions']['description'])
         );
