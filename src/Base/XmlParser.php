@@ -60,6 +60,11 @@ class XmlParser
         }
 
         if (is_array($array)) {
+            if (count($array) == 1 && array_key_exists('@attributes', $array)) {
+                $array[] = (string) $xml;
+                return $array;
+            }
+
             foreach ($array as $key => $value) {
                 if (is_object($value)) {
                     if ($value instanceof \SimpleXMLElement) {

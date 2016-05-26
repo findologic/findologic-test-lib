@@ -6,14 +6,28 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 {
     /**
      * Tests if export has proper number of products
+     *
+     * @return array $products exported products in assoc array
      */
     public function testNumberOfExportedProducts()
     {
-        $expectedCount = $this->getProductCount();
-        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $products['items']['@attributes']['total'];
+        $expectedTotalCount = $this->getProductCount();
+        $expectedCount = 1;
+        $products = $this->executeApiExport(['count' => $expectedCount, 'start' => 0]);
+        $actualTotalCount = (int) $products['items']['@attributes']['total'];
+        $actualCount = (int) $products['items']['@attributes']['count'];
 
-        $this->assertEquals($expectedCount, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
+        $this->assertEquals(
+            $expectedTotalCount,
+            $actualTotalCount,
+            "Expected total count of $expectedTotalCount but export returned $actualTotalCount"
+        );
+
+        $this->assertEquals(
+            $expectedCount,
+            $actualCount,
+            "Expected exported count of $expectedCount but export returned $actualCount"
+        );
 
         return $products;
     }
@@ -23,18 +37,36 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
+     * @throws \Exception
      */
     public function testInactiveItemsAreNotExported(array $products)
     {
-        $expectedCount = $this->getProductCount();
-        $productId = $products['items']['item']['@attributes']['id'];
+        try {
+            $expectedCount = $this->getProductCount();
+            $productId = $products['items']['item']['@attributes']['id'];
 
-        $this->changeItemActiveStatus($productId, 0);
-        $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $newExport['items']['@attributes']['total'];
-        $this->changeItemActiveStatus($productId, 1);
+            $this->startTransaction();
+            $this->changeItemActiveStatus($productId, 0);
+            $this->commitTransaction();
 
-        $this->assertEquals($expectedCount - 1, $actualCount, "Expected count of $expectedCount but export returned " . $actualCount);
+            $newExport = $this->executeApiExport(['count' => 1, 'start' => 0]);
+            $actualCount = (int) $newExport['items']['@attributes']['total'];
+
+            $this->startTransaction();
+            $this->changeItemActiveStatus($productId, 1);
+            $this->commitTransaction();
+
+            $oneLess = $expectedCount - 1;
+            $this->assertEquals(
+                $expectedCount - 1,
+                $actualCount,
+                "Expected count of $oneLess but export returned $actualCount"
+            );
+        } catch (\Exception $e) {
+            $this->rollbackTransaction();
+            print $e->getMessage();
+        }
     }
 
     /**
@@ -42,23 +74,38 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
+     * @throws \Exception
      */
     public function testItemsWithoutStockAreNotExported(array $products)
     {
-        $expectedCount = $this->getProductCount();
-        $productId = $products['items']['item']['@attributes']['id'];
+        try {
+            $expectedCount = $this->getProductCount();
+            $productId = $products['items']['item']['@attributes']['id'];
 
-        $this->changeItemStockStatus($productId, 0);
-        $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
-        $actualCount = (int) $products['items']['@attributes']['total'];
-        $this->changeItemStockStatus($productId, 1);
+            $this->startTransaction();
+            $this->changeItemStockStatus($productId, 0);
+            $this->commitTransaction();
 
-        $oneLess = $expectedCount - 1;
-        $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned " . $actualCount);
+            $products = $this->executeApiExport(['count' => 1, 'start' => 0]);
+            $actualCount = (int) $products['items']['@attributes']['total'];
+
+            $this->startTransaction();
+            $this->changeItemStockStatus($productId, 1);
+            $this->commitTransaction();
+
+            $oneLess = $expectedCount - 1;
+            $this->assertEquals($oneLess, $actualCount, "Expected count of $oneLess but export returned $actualCount");
+        } catch(\Exception $e) {
+            $this->rollbackTransaction();
+            print $e->getMessage();
+        }
     }
 
     /**
      * Tests if product data is exported in correct language
+     *
+     * @return void
      */
     public function testMultiLanguageSupport()
     {
@@ -86,6 +133,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
      */
     public function testProductOrderNumberExport(array $products)
     {
@@ -106,6 +154,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
      */
     public function testProductTitleExport(array $products)
     {
@@ -122,6 +171,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
      */
     public function testProductSummaryExport(array $products)
     {
@@ -138,6 +188,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
      */
     public function testProductDescriptionExport(array $products)
     {
@@ -159,6 +210,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
      */
     public function testProductPriceExport(array $products)
     {
@@ -175,6 +227,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
      */
     public function testProductUrlExport(array $products)
     {
@@ -191,19 +244,280 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
+     * @return void
      */
-//    public function testIfFirstImageIsThumbnail(array $products)
-//    {
-//
-//    }
+    public function testIfFirstImageIsThumbnail(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Product thumbnail images do not match!';
+
+        $productThumbnailUrl = $this->getProductThumbnailUrl($productId);
+        $productThumbnailUrlExport = $products['items']['item']['allImages']['images']['image'][0][0];
+
+        $this->assertEquals($productThumbnailUrl, $productThumbnailUrlExport, $message);
+    }
 
     /**
-     * Gets product images by product id
+     * Tests if number of exported product images matches actual number of product images
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
+     * @return void
+     */
+    public function testNumberOfExportedProductImages(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Number of product images do not match!';
+
+        $productImages = $this->getProductImages($productId);
+        $productImagesExport = $products['items']['item']['allImages']['images']['image'];
+
+        $productImagesCount = count($productImages);
+        $productImagesExportCount = count($productImagesExport);
+
+        $this->assertEquals($productImagesCount, $productImagesExportCount, $message);
+    }
+
+    /**
+     * Tests if number of exported product attributes matches actual number of product attributes
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
+     * @return void
+     */
+    public function testNumberOfExportedProductAttributes(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Number of product attributes do not match!';
+
+        $productAttributes = $this->getProductAttributes($productId);
+        $productAttributesExport = $products['items']['item']['allAttributes']['attributes']['attribute'];
+
+        $productAttributesCount = count($productAttributes);
+        $productAttributesExportCount = count($productAttributesExport);
+
+        $this->assertEquals($productAttributesCount, $productAttributesExportCount, $message);
+    }
+
+    /**
+     * Tests if number of exported product keywords matches actual number of product keywords
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
+     * @return void
+     */
+    public function testNumberOfExportedKeywordsForProduct(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Number of product keywords do not match!';
+
+        $productKeywords = $this->getProductKeywords($productId);
+        $productKeywordsExport = $products['items']['item']['allKeywords']['keywords']['keyword'];
+
+        $productKeywordsCount = count($productKeywords);
+        $productKeywordsExportCount = count($productKeywordsExport);
+
+        $this->assertEquals($productKeywordsCount, $productKeywordsExportCount, $message);
+    }
+
+    /**
+     * Tests if number of exported product user groups matches actual number of product user groups
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
+     * @return void
+     */
+    public function testNumberOfExportedUserGroups(array $products)
+    {
+        $message = 'Number of user groups do not match!';
+
+        $userGroups = $this->getUserGroups();
+        $userGroupsExport = $products['items']['item']['usergroups']['usergroup'];
+
+        $userGroupsCount = count($userGroups);
+        $userGroupsExportCount = count($userGroupsExport);
+
+        $this->assertEquals($userGroupsCount, $userGroupsExportCount, $message);
+    }
+
+    /**
+     * Tests if user groups in export are properly encoded with base64_encode()
+     *
+     * @depends testNumberOfExportedProducts
+     * @depends testNumberOfExportedUserGroups
+     * @param array $products
+     * @return void
+     */
+    public function testIfUserGroupsAreProperlyEncoded(array $products)
+    {
+        $message = 'User groups are not properly encoded!';
+
+        $userGroups = $this->getUserGroups();
+        $userGroupsExport = $products['items']['item']['usergroups']['usergroup'];
+
+        $this->assertEquals($userGroups, $userGroupsExport, $message);
+    }
+
+    /**
+     * Tests if sales frequency in export matches sales actual sales frequency
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
+     * @return void
+     */
+    public function testIfSalesFrequencyIsProperlyExported(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $salesFrequency = $this->getProductSalesFrequency($productId);
+
+        $this->assertEquals($salesFrequency, $products['items']['item']['salesFrequencies']);
+
+        $productWithSalesFrequency = $this->executeApiExport([
+            'count' => 1,
+            'start' => $this->getExportPositionOfTheProductWithSalesFrequency()
+        ]);
+        $productWithSalesFrequencyId = $productWithSalesFrequency['items']['item']['@attributes']['id'];
+        $salesFrequency = $this->getProductSalesFrequency($productWithSalesFrequencyId);
+
+        $this->assertArrayHasKey('salesFrequency', $productWithSalesFrequency['items']['item']['salesFrequencies']);
+        $this->assertEquals(
+            $salesFrequency,
+            $productWithSalesFrequency['items']['item']['salesFrequencies']['salesFrequency']
+        );
+    }
+
+    /**
+     * Tests if sales frequency in export matches sales actual sales frequency
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
+     * @return void
+     */
+    public function testIfDateAddedIsProperlyExported(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Date when product is added does not match with the exported one';
+
+        $dateAdded = $this->getProductDateAdded($productId);
+
+        $dateAddedExport = $products['items']['item']['dateAddeds']['dateAdded'];
+        $dateAddedExport = explode('T', $dateAddedExport);
+
+        $this->assertEquals($dateAdded, $dateAddedExport[0], $message);
+    }
+
+    /**
+     * Tests if sales frequency in export matches sales actual sales frequency
+     *
+     * @depends testNumberOfExportedProducts
+     * @param array $products
+     * @return void
+     */
+    public function testNumberOfExportedProperties(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Number of product properties does not match number of exported properties';
+
+        $productProperties = $this->getProductProperties($productId);
+        $exportProductProperties = $products['items']['item']['allProperties']['properties']['property'];
+
+        $productsPropertiesCount = count($productProperties);
+        $exportProductPropertiesCount = count($exportProductProperties);
+
+        $this->assertEquals($productsPropertiesCount, $exportProductPropertiesCount, $message);
+    }
+
+    /**
+     * Starts mysql transaction
+     *
+     * @return bool
+     */
+    protected abstract function startTransaction();
+
+    /**
+     * Commits mysql transaction
+     *
+     * @return bool
+     */
+    protected abstract function commitTransaction();
+
+
+    /**
+     * RollBacks mysql transaction
+     *
+     * @return bool
+     */
+    protected abstract function rollbackTransaction();
+
+    /**
+     * Returns position of the product in export that has sales frequency
+     *
+     * @return int
+     */
+    protected abstract function getExportPositionOfTheProductWithSalesFrequency();
+
+    /**
+     * Returns properties of the product by product id
      *
      * @param $productId
-     * @return mixed
+     * @return array
      */
-//    protected abstract function getProductImages($productId);
+    protected abstract function getProductProperties($productId);
+
+    /**
+     * Returns product date added by product id
+     *
+     * @param $productId
+     * @return string
+     */
+    protected abstract function getProductDateAdded($productId);
+
+    /**
+     * Returns sales frequency by product id
+     *
+     * @param $productId
+     * @return int
+     */
+    protected abstract function getProductSalesFrequency($productId);
+
+    /**
+     * Returns all product user groups
+     *
+     * @return array
+     */
+    protected abstract function getUserGroups();
+
+    /**
+     * Returns all product keywords by product id
+     *
+     * @param $productId
+     * @return array
+     */
+    protected abstract function getProductKeywords($productId);
+
+    /**
+     * Returns all product attributes by product id
+     *
+     * @param $productId
+     * @return array
+     */
+    protected abstract function getProductAttributes($productId);
+
+    /**
+     * Returns all product images by product id
+     *
+     * @param $productId
+     * @return array
+     */
+    protected abstract function getProductImages($productId);
+
+    /**
+     * Returns product thumbnail image by product id
+     *
+     * @param $productId
+     * @return string
+     */
+    protected abstract function getProductThumbnailUrl($productId);
 
     /**
      * Returns product url by product id
@@ -308,7 +622,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      * @return array|string
      * @throws \Exception
      */
-    private function executeApiExport($params = [], $languageName = 'english')
+    protected function executeApiExport($params = [], $languageName = 'english')
     {
         if (!array_key_exists('shopkey', $params)) {
             $params['shopkey'] = $this->getShopApiKey($languageName);
@@ -318,5 +632,4 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         return XmlParser::getInstance()->parse($url);
     }
-
 }
