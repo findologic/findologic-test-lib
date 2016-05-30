@@ -246,16 +246,16 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
      * @param array $products
      * @return void
      */
-    public function testIfFirstImageIsThumbnail(array $products)
-    {
-        $productId = $products['items']['item']['@attributes']['id'];
-        $message = 'Product thumbnail images do not match!';
-
-        $productThumbnailUrl = $this->getProductThumbnailUrl($productId);
-        $productThumbnailUrlExport = $products['items']['item']['allImages']['images']['image'][0][0];
-
-        $this->assertEquals($productThumbnailUrl, $productThumbnailUrlExport, $message);
-    }
+//    public function testIfFirstImageIsThumbnail(array $products)
+//    {
+//        $productId = $products['items']['item']['@attributes']['id'];
+//        $message = 'Product thumbnail images do not match!';
+//
+//        $productThumbnailUrl = $this->getProductThumbnailUrl($productId);
+//        $productThumbnailUrlExport = $products['items']['item']['allImages']['images']['image'][0][0];
+//
+//        $this->assertEquals($productThumbnailUrl, $productThumbnailUrlExport, $message);
+//    }
 
     /**
      * Tests if number of exported product images matches actual number of product images
@@ -407,7 +407,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if sales frequency in export matches sales actual sales frequency 
+     * Tests if sales frequency in export matches sales actual sales frequency
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
