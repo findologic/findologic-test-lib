@@ -407,7 +407,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if sales frequency in export matches sales actual sales frequency
+     * Tests if sales frequency in export matches sales actual sales frequency 
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
