@@ -370,17 +370,10 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     /**
      * Tests if sales frequency in export matches sales actual sales frequency
      *
-     * @depends testNumberOfExportedProducts
-     * @param array $products
      * @return void
      */
-    public function testIfSalesFrequencyIsProperlyExported(array $products)
+    public function testIfSalesFrequencyIsProperlyExported()
     {
-        $productId = $products['items']['item']['@attributes']['id'];
-        $salesFrequency = $this->getProductSalesFrequency($productId);
-
-        $this->assertEquals($salesFrequency, $products['items']['item']['salesFrequencies']);
-
         $productWithSalesFrequency = $this->executeApiExport([
             'count' => 1,
             'start' => $this->getExportPositionOfTheProductWithSalesFrequency()
@@ -396,7 +389,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if sales frequency in export matches sales actual sales frequency
+     * Tests if date added in export matches sales actual date added
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
@@ -416,7 +409,7 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if sales frequency in export matches sales actual sales frequency
+     * Tests if number of properties in export matches actual number of properties
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
