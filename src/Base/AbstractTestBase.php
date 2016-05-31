@@ -4,6 +4,14 @@ namespace Soprex\Findologic\Modules\Tests\Base;
 
 abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 {
+    /* Tests for exporting mandatory nodes */
+
+//    public function testIfAllOrderNumbersNodeExists()
+//    {
+//
+//    }
+
+
     /**
      * Tests if export has proper number of products
      *
@@ -240,22 +248,23 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if in exported images first image is thumbnail
+     * Tests if thumbnail image is properly exported
      *
      * @depends testNumberOfExportedProducts
      * @param array $products
      * @return void
      */
-//    public function testIfFirstImageIsThumbnail(array $products)
-//    {
-//        $productId = $products['items']['item']['@attributes']['id'];
-//        $message = 'Product thumbnail images do not match!';
-//
-//        $productThumbnailUrl = $this->getProductThumbnailUrl($productId);
-//        $productThumbnailUrlExport = $products['items']['item']['allImages']['images']['image'][0][0];
-//
-//        $this->assertEquals($productThumbnailUrl, $productThumbnailUrlExport, $message);
-//    }
+    public function testIfImageIsThumbnail(array $products)
+    {
+        $productId = $products['items']['item']['@attributes']['id'];
+        $message = 'Product thumbnail images do not match!';
+        $thumbnailIndex = $this->getThumbnailIndex();
+
+        $productThumbnailUrl = $this->getProductThumbnailUrl($productId);
+        $productThumbnailUrlExport = $products['items']['item']['allImages']['images']['image'][$thumbnailIndex - 1][0];
+
+        $this->assertEquals($productThumbnailUrl, $productThumbnailUrlExport, $message);
+    }
 
     /**
      * Tests if number of exported product images matches actual number of product images
@@ -426,6 +435,13 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($productsPropertiesCount, $exportProductPropertiesCount, $message);
     }
+
+    /**
+     * Returns index of thumbnail image url in export
+     *
+     * @return int
+     */
+    protected abstract function getThumbnailIndex();
 
     /**
      * Starts mysql transaction
