@@ -381,7 +381,6 @@ abstract class AbstractTestBase extends \PHPUnit_Framework_TestCase
         $productWithSalesFrequencyId = $productWithSalesFrequency['items']['item']['@attributes']['id'];
         $salesFrequency = $this->getProductSalesFrequency($productWithSalesFrequencyId);
 
-        $this->assertArrayHasKey('salesFrequency', $productWithSalesFrequency['items']['item']['salesFrequencies']);
         $this->assertEquals(
             $salesFrequency,
             $productWithSalesFrequency['items']['item']['salesFrequencies']['salesFrequency']
